@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+import math
 # Load the YOLOv3 model and its configuration
 model_config = "yolov3.cfg"
 model_weights = "yolov3.weights"
@@ -80,6 +80,17 @@ for i in indices:
         # Draw the bounding box and label on the image
         cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
         cv2.putText(image, label, (x, y - 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+x = math.floor(x + (width / 2))
+y = math.floor(y + (height / 2))
+cross_length = 20
+cross_color = (0, 255, 0)  # Green color, you can change it to your desired color
+
+# Draw the vertical line of the cross
+cv2.line(image, (x, y - cross_length), (x, y + cross_length), cross_color, thickness=2)
+
+# Draw the horizontal line of the cross
+cv2.line(image, (x - cross_length, y), (x + cross_length, y), cross_color, thickness=2)
 
 # Display the output image
 cv2.imshow("Object Detection", image)
