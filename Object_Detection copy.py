@@ -1,9 +1,5 @@
-from picamera import PiCamera
 import cv2
 import numpy as np
-cam = PiCamera()
-cam.capture("")
-cam.capture("/home/pi/Documents/hotdogRPILocal.jpg")
 
 # Load the YOLOv3 model and its configuration
 model_config = "yolov3.cfg"
@@ -25,7 +21,7 @@ with open("coco.names", "r") as f:
     classes = f.read().splitlines()
 
 # Load the input image
-image_path = "/home/pi/Documents/hotdogRPILocal.jpg"
+image_path = "hotdog.jpg"
 image = cv2.imread(image_path)
 
 # Prepare the input image for object detection
@@ -50,6 +46,7 @@ for out in outs:
         # Extract class scores and class label
         scores = detection[5:]
         class_id = np.argmax(scores)
+        # print(class_id.shape)
         confidence = scores[class_id]
 
         # Consider only detections with high confidence
@@ -71,14 +68,18 @@ for out in outs:
 indices = cv2.dnn.NMSBoxes(boxes, confidences, score_threshold=0.5, nms_threshold=0.3)
 
 # Loop over the remaining detections and draw bounding boxes around detected objects
+print(image.shape)
 for i in indices:
-    #i = i[0]
-    (x, y, w, h) = boxes[i]
     label = f"{classes[class_labels[i]]}: {confidences[i]:.2f}"
-
-    # Draw the bounding box and label on the image
-    cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-    cv2.putText(image, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+    #print(classes[class_labels[i]])
+    if classes[class_labels[i]] == "hot dog":
+        (x, y, w, h) = boxes[i]
+        # print(x)
+        # print(y)
+        ## X y Y son la esquina superior izquierda y el eje Y está invertido 
+        # Draw the bounding box and label on the image
+        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv2.putText(image, label, (x, y - 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
 # Display the output image
 cv2.imshow("Object Detection", image)
